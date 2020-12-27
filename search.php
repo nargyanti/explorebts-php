@@ -5,29 +5,39 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">    
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
         <!-- <link href="css/styleLogin.css" rel="stylesheet" />         -->
-        <title>Home</title>
+        <title>Search</title>
     </head>
     <body>
-        <?php include "components/navbarVendor.php"; ?>
-        <div class="container">            
+        <?php
+            include "connection.php";
+            session_start();                
+            
+            $keyword = $_GET['keyword'];
+            $user_id = $_SESSION['user_id'];            
+                        
+            if($_SESSION['role_id'] == 1) {
+                $query = "SELECT * FROM products WHERE product_name LIKE '%$keyword%' AND vendor_id = $user_id";                
+                include "components/navbarVendor.php";
+                echo '<a href="createProduct.html"><button type="button" class="btn btn-primary">Create new product</button></a>';
+            } else if($_SESSION['role_id'] == 2) {
+                $query = "SELECT * FROM products WHERE product_name LIKE '%$keyword%'";
+                include "components/navbarUser.php"; 
+            } 
+
+            $result = mysqli_query($connect, $query);
+        ?>     
+        <div class="container">   
+            <!-- search bar          -->
             <form action="search.php" method="GET" class="form-inline justify-content-center pt-4">
-                <input class="form-control mr-sm-2 w-50" type="search" placeholder="Search" name="keyword">
+                <input class="form-control mr-sm-2 w-50" type="search" placeholder="Search" name="keyword" value="<?php echo $keyword ?>">
                 <button class="btn btn-dark my-2 my-sm-0 search-button" type="submit">Search</button>
             </form>
-            <a href="createProduct.html"><button type="button" class="btn btn-primary">Create new product</button></a>
             <div class="row">
-                <?php
-                    include "connection.php";
-                    session_start();                
-                    $vendor_id = $_SESSION['user_id'];
-                    $query = "SELECT * FROM products WHERE vendor_id = $vendor_id ;";
-                    $result = mysqli_query($connect, $query);
-
+                <?php                    
                     if(mysqli_num_rows($result) > 0) {
                         while($row = mysqli_fetch_assoc($result)){
                             ?>
-                            <!-- product card -->
-    
+                            <!-- product card -->    
                             <div class="col-lg-4 col-md-6 mb-4">
                                 <div class="card h-100">
                                     <img class="card-img-top" src="uploads/product_pict/<?php echo $row['product_pict'];?>" alt="">
@@ -37,12 +47,20 @@
                                     </div>
                                     <div class="card-footer">                            
                                         <div class="row">
-                                            <div class=col>
-                                                <a href="editProduct.php?product_id=<?php echo $row['product_id'];?>"><button type="button" class="btn btn-success">Edit</button></a>
-                                            </div>
-                                            <div class=col>                                                
-                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteProduct<?php echo $row['product_id'];?>">Delete</button>
-                                            </div>
+                                            <?php
+                                                if($_SESSION['role_id'] == 1) { ?>
+                                                    <div class=col>
+                                                        <a href="editProduct.php?product_id=<?php echo $row['product_id'];?>"><button type="button" class="btn btn-success">Edit</button></a>
+                                                    </div>
+                                                    <div class=col>                                                
+                                                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteProduct<?php echo $row['product_id'];?>">Delete</button>
+                                                    </div>
+                                                <?php
+                                                } else if($_SESSION['role_id'] == 2) {?>
+                                                    <a href="booking.html?product_id=<?php echo $row['product_id'];?>"><button type="button" class="btn btn-primary">Booking!</button></a>
+                                                    <?php
+                                                }                                                 
+                                            ?>                                                                                        
                                         </div>                                                                
                                     </div>                            
                                 </div>

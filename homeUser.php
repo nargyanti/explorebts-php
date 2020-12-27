@@ -10,10 +10,14 @@
     </head>
     <body>
         <?php include "components/navbarUser.php"; ?>
+        <form action="search.php" method="GET" class="form-inline justify-content-center pt-4">
+            <input class="form-control mr-sm-2 w-50" type="search" placeholder="Search" name="keyword">
+            <button class="btn btn-dark my-2 my-sm-0 search-button" type="submit">Search</button>
+        </form>
         <div class="row">
             <?php
                 include "connection.php";
-                $query = "SELECT * FROM products";
+                $query = "SELECT * FROM products WHERE product_stock > 0";
                 $result = mysqli_query($connect, $query);
                 
                 if(mysqli_num_rows($result) > 0){
@@ -29,7 +33,7 @@
                                 <h5>Rp <?php echo $row['unit_price'];?></h5>
                             </div>
                             <div class="card-footer">                            
-                                <a href="booking.html?product_id=<?php echo $row['product_id'];?>"><button type="button" class="btn btn-primary">Booking!</button></a>
+                                <a href="booking.php?product_id=<?php echo $row['product_id'];?>"><button type="button" class="btn btn-primary">Booking!</button></a>
                             </div>
                         </div>
                     </div>

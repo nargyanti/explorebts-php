@@ -18,7 +18,7 @@
     if (mysqli_query($connect, $query)) {                
         $query = "UPDATE products SET product_stock = product_stock - 1 WHERE product_id = $product_id;";
         if (mysqli_query($connect, $query)) {            
-            echo "berhasil beli";
+            echo "<script>alert('Berhasil booking." .  mysqli_error($connect) . "'); window.location.href='homeUser.php'</script>";
         } else {
             echo "gagal tumbas<br>";
             echo mysqli_error($connect);
